@@ -80,6 +80,11 @@ OroGen::Gen::RTT_CPP::Deployment.register_global_initializer(
         include_directories(${QT_INCLUDE_DIR})
         link_directories(${QT_LIBRARY_DIR})
         set(CMAKE_AUTOMOC true)
+
+        target_link_libraries(${<%= project.name.upcase %>_TASKLIB_NAME}
+            ${OrocosRTT_LIBRARIES}
+            ${QT_LIBRARIES}
+            ${<%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES})
     QT_DEPLOYMENT_CMAKE
     deployment_cmake: <<~QT_DEPLOYMENT_CMAKE,
         find_package(Qt4 REQUIRED)
@@ -122,12 +127,32 @@ OroGen::Gen::RTT_CPP::Deployment.register_global_initializer(
     QT_EXIT_CODE
     tasks_cmake: <<~QT_DEPLOYMENT_CMAKE,
         find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
-        target_link_libraries(${<%= project.name.upcase %>_TASKLIB_NAME} Qt5::Core Qt5::Widgets)
+        target_link_libraries(${<%= project.name.upcase %>_TASKLIB_NAME} PUBLIC
+            ${OrocosRTT_LIBRARIES}
+            Qt5::Core Qt5::Widgets
+            ${<%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES})
         set(CMAKE_AUTOMOC true)
     QT_DEPLOYMENT_CMAKE
     deployment_cmake: <<~QT_DEPLOYMENT_CMAKE,
         find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
         target_link_libraries(<%= deployer.name %> Qt5::Core Qt5::Widgets)
         set(CMAKE_AUTOMOC true)
+    QT_DEPLOYMENT_CMAKE
+    tasklib_cmake: <<~QT_DEPLOYMENT_CMAKE,
+        <%=
+        qt5_deps = []
+        qt5_core = BuildDependency.new("Qt5Core", "Qt5Core")
+        qt5_core.in_context("core", "include")
+        qt5_core.in_context("core", "link")
+        qt5_deps << qt5_core
+        qt5_widgets = BuildDependency.new("Qt5Widgets", "Qt5Widgets")
+        qt5_widgets.in_context("core", "include")
+        qt5_widgets.in_context("core", "link")
+        qt5_deps << qt5_widgets
+        Generation.cmake_pkgconfig_require(qt5_deps)
+        %>
+
+        list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES ${Qt5Core_LIBRARIES})
+        list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES ${Qt5Widget_LIBRARIES})
     QT_DEPLOYMENT_CMAKE
 )

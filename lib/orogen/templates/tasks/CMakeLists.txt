@@ -12,9 +12,6 @@ add_dependencies(${<%= project.name.upcase %>_TASKLIB_NAME}
 <%= ERB.new(init.tasks_cmake).result(binding) %>
 <% end %>
 
-TARGET_LINK_LIBRARIES(${<%= project.name.upcase %>_TASKLIB_NAME}
-    ${OrocosRTT_LIBRARIES}
-    ${<%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES})
 SET_TARGET_PROPERTIES(${<%= project.name.upcase %>_TASKLIB_NAME}
     PROPERTIES LINK_INTERFACE_LIBRARIES "${<%= project.name.upcase %>_TASKLIB_INTERFACE_LIBRARIES}")
 SET_TARGET_PROPERTIES(${<%= project.name.upcase %>_TASKLIB_NAME}

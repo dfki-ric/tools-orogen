@@ -31,7 +31,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 <% if project.typekit %>
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/typekit)
-list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES 
+list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES
     <%= project.name %>-typekit-${OROCOS_TARGET})
 <% end %>
 
@@ -45,15 +45,17 @@ list(APPEND <%= project.name.upcase %>_TASKLIB_INTERFACE_LIBRARIES ${<%= dep_def
 <% end %>
 <% end %>
 
+<% project.each_needed_global_cpp_initializer do |init| %><%= ERB.new(init.tasklib_cmake).result(binding) %><% end %>
+
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/<%= Generation::AUTOMATIC_AREA_NAME %>/tasks/<%= project.name %>-tasks.pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/<%= project.name %>-tasks-${OROCOS_TARGET}.pc @ONLY)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/<%= project.name %>-tasks-${OROCOS_TARGET}.pc
     DESTINATION lib/pkgconfig)
 
-<% 
+<%
    include_files = []
    task_files = []
-   project.self_tasks.each do |task| 
+   project.self_tasks.each do |task|
      if !task_files.empty?
 	 task_files << "\n    "
      end
