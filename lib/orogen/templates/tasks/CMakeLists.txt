@@ -14,7 +14,6 @@ add_dependencies(${<%= project.name.upcase %>_TASKLIB_NAME}
 
 TARGET_LINK_LIBRARIES(${<%= project.name.upcase %>_TASKLIB_NAME}
     ${OrocosRTT_LIBRARIES}
-    ${QT_LIBRARIES}
     ${<%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES})
 SET_TARGET_PROPERTIES(${<%= project.name.upcase %>_TASKLIB_NAME}
     PROPERTIES LINK_INTERFACE_LIBRARIES "${<%= project.name.upcase %>_TASKLIB_INTERFACE_LIBRARIES}")
@@ -27,4 +26,3 @@ INSTALL(TARGETS ${<%= project.name.upcase %>_TASKLIB_NAME}
 
 INSTALL(FILES ${<%= project.name.upcase %>_TASKLIB_HEADERS}
     DESTINATION include/orocos/<%= project.name.downcase %>)
-
