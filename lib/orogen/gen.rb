@@ -126,16 +126,21 @@ OroGen::Gen::RTT_CPP::Deployment.register_global_initializer(
         pthread_join(qt_thread, NULL);
     QT_EXIT_CODE
     tasks_cmake: <<~QT_DEPLOYMENT_CMAKE,
-        find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+        find_package(Rock REQUIRED)
+        rock_find_qt5(Core Gui Widgets UiTools)
         target_link_libraries(${<%= project.name.upcase %>_TASKLIB_NAME} PUBLIC
             ${OrocosRTT_LIBRARIES}
-            Qt5::Core Qt5::Widgets
+            Qt5::Core
+            Qt5::Gui
+            Qt5::Widgets
+            Qt5::UiTools
             ${<%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES})
         set(CMAKE_AUTOMOC true)
     QT_DEPLOYMENT_CMAKE
     deployment_cmake: <<~QT_DEPLOYMENT_CMAKE,
-        find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
-        target_link_libraries(<%= deployer.name %> Qt5::Core Qt5::Widgets)
+        find_package(Rock REQUIRED)
+        rock_find_qt5(Core Gui Widgets UiTools)
+        target_link_libraries(<%= deployer.name %> Qt5::Core Qt5::Gui Qt5::Widgets Qt5::UiTools)
         set(CMAKE_AUTOMOC true)
     QT_DEPLOYMENT_CMAKE
     tasklib_cmake: <<~QT_DEPLOYMENT_CMAKE,
@@ -145,14 +150,24 @@ OroGen::Gen::RTT_CPP::Deployment.register_global_initializer(
         qt5_core.in_context("core", "include")
         qt5_core.in_context("core", "link")
         qt5_deps << qt5_core
+        qt5_gui = BuildDependency.new("Qt5Gui", "Qt5Gui")
+        qt5_gui.in_context("core", "include")
+        qt5_gui.in_context("core", "link")
+        qt5_deps << qt5_gui
         qt5_widgets = BuildDependency.new("Qt5Widgets", "Qt5Widgets")
         qt5_widgets.in_context("core", "include")
         qt5_widgets.in_context("core", "link")
         qt5_deps << qt5_widgets
+        qt5_uitools = BuildDependency.new("Qt5UiTools", "Qt5UiTools")
+        qt5_uitools.in_context("core", "include")
+        qt5_uitools.in_context("core", "link")
+        qt5_deps << qt5_uitools
         Generation.cmake_pkgconfig_require(qt5_deps)
         %>
 
         list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES ${Qt5Core_LIBRARIES})
-        list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES ${Qt5Widget_LIBRARIES})
+        list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES ${Qt5Gui_LIBRARIES})
+        list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES ${Qt5Widgets_LIBRARIES})
+        list(APPEND <%= project.name.upcase %>_TASKLIB_DEPENDENT_LIBRARIES ${Qt5UiTools_LIBRARIES})
     QT_DEPLOYMENT_CMAKE
 )
